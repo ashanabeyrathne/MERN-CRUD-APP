@@ -1,81 +1,82 @@
-import React, { useState } from "react";
-import useForm from "../../components/useForm";
-import validate from '../../components/loginFormValidation'
-import { Navigate, Link } from "react-router-dom";
+import React, { useState } from 'react';
+import axios from 'axios';
 
-const Login = props => {
-    const { values, errors, handleChange, handleSubmit } = useForm(
-        login,
-        validate
-    );
-    const [setLoggedIn] = useState(false);
+function LoginForm() {
 
-    function login() {
-        setLoggedIn(true);
-        props.parentCallback(true);
-        return <Navigate to="/default" />;
-    }
+
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
+
+    const [password, setPassword] = useState('');
+    const [passwordError, setPasswordError] = useState('');
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+        const newLogUser = {
+            email,
+            password
+        }
+
+
+        // Validate form data
+
+        if (!email) {
+            setEmailError('Email is required');
+        } else if (!/\S+@\S+\.\S+/.test(email)) {
+            setEmailError('Invalid email address');
+        } else {
+            setEmailError('');
+        }
+
+        if (!password) {
+            setPasswordError('Password is required');
+        } else if (password.length < 8) {
+            setPasswordError('Password must be at least 8 characters long');
+        } else {
+            setPasswordError('');
+        }
+
+
+        // If form data is valid, submit form
+        if (!emailError && !passwordError) {
+            axios.post("http://localhost:5000/loginusers", newLogUser)
+                .then((response) => {
+                    // Handle successful response
+                    console.log(response);
+                })
+                .catch((error) => {
+                    // Handle error
+                    console.log(error);
+                });
+        }
+    };
 
     return (
-        <div className="section is-fullheight">
-            <div className="container">
-                <div className="column is-6 is-offset-3">
-                    <div className="box">
-                        <h1>Login</h1>
-                        <form onSubmit={handleSubmit} noValidate>
-                            <div className="field">
-                                <label className="label">Email Address</label>
-                                <div className="control">
-                                    <input
-                                        autoComplete="off"
-                                        className={`input ${errors.email && "is-danger"}`}
-                                        type="email"
-                                        name="email"
-                                        onChange={handleChange}
-                                        value={values.email || ""}
-                                        required
-                                    />
-                                    {errors.email && (
-                                        <p className="help is-danger">{errors.email}</p>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="field">
-                                <label className="label">Password</label>
-                                <div className="control">
-                                    <input
-                                        className={`input ${errors.password && "is-danger"}`}
-                                        type="password"
-                                        name="password"
-                                        onChange={handleChange}
-                                        value={values.password || ""}
-                                        required
-                                    />
-                                </div>
-                                {errors.password && (
-                                    <p className="help is-danger">{errors.password}</p>
-                                )}
-                            </div>
-                            <button
-                                type="submit"
-                                className="button is-block is-info is-fullwidth"
-                            >
-                                Login
-                            </button>
-                            <br/>
-                            <label className="label">If you don't have an account?</label>
-                            <Link to="/signup"> <button
-                                type="submit"
-                                className="button is-block is-info is-fullwidth"
-                            >
-                                Signup
-                            </button></Link>
-                        </form>
-                    </div>
+
+        <div className="container">
+            <form onSubmit={handleSubmit}>
+                <h1>Login</h1>
+
+                <div className="form-group">
+                    <label htmlFor="exampleInputEmail1" className="form-label">Email address</label>
+                    <input type="email"  className="form-control"
+                           value={email}
+                           onChange={(event) => setEmail(event.target.value)} />
+                    {emailError && <span>{emailError}</span>}
                 </div>
-            </div>
+
+                <div className="form-group">
+                    <label htmlFor="exampleInputEmail1" className="form-label">Password</label>
+                    <input type="password" className="form-control" value={password} onChange={(event) => setPassword(event.target.value)} />
+                    {passwordError && <span>{passwordError}</span>}
+                </div>
+
+                <button type="submit" className="btn btn-primary">Login</button>
+            </form>
         </div>
     );
-};
+}
 
-export default Login;
+export default LoginForm;
+

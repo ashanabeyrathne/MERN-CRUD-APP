@@ -23,7 +23,7 @@ const logUser = mongoose.Schema({
     },
     confirmPassword:{
         type: String,
-        required: true,
+
     }
 });
 

@@ -1,8 +1,8 @@
 import express from "express";
 import { saveLogUser } from "../controllers/SignupController.js";
 
-const signuprouter = express.Router();
+const router = express.Router();
 
-signuprouter.post('/signupusers', saveLogUser);
+router.post('/signupusers', saveLogUser);
 
-export default signuprouter;
+export default router;
